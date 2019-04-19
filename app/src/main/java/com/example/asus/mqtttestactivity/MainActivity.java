@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initClient();
         tvShow = findViewById(R.id.tvShow);
+//        MqttManager.getInstall(MainActivity.this);
     }
 
     //初始化客户端
@@ -58,7 +59,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void connectionLost(Throwable cause) {
                 //连接丢失异常
-                Log.e("Mqtt","---mqtt----connectionLost");
+                cause.fillInStackTrace();
+                Log.e("Mqtt","---mqtt----connectionLost" + cause.getMessage());
             }
 
             @Override
@@ -115,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (MqttException e) {
             e.printStackTrace();
         }
+//        MqttManager.getInstall(MainActivity.this).subrice(tvShow);
     }
 
     //发布信息，主题是 /xuhong ,质量是0信息是 hello xuhong
@@ -141,7 +144,19 @@ public class MainActivity extends AppCompatActivity {
             Log.e("Mqtt","---mqtt----发布--exception");
             tvShow.setText("发布消息失败");
         }
+//        MqttManager.getInstall(MainActivity.this).sendMessage(tvShow);
+    }
 
+    @Override
+    protected void onDestroy() {
+//        MqttManager.getInstall(MainActivity.this).disConnect();
+        try {
+            client.disconnect();
+            client = null;
+        } catch (MqttException e) {
+            e.printStackTrace();
+        }
+        super.onDestroy();
     }
 }
 

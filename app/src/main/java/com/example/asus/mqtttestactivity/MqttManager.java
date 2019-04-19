@@ -2,6 +2,8 @@ package com.example.asus.mqtttestactivity;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -58,6 +60,7 @@ public class MqttManager {
             public void connectionLost(Throwable cause) {
                 //连接丢失异常
                 Log.e("Mqtt","---mqtt----connectionLost");
+                doConnect();
             }
 
             @Override
@@ -72,6 +75,7 @@ public class MqttManager {
             }
         });
 
+        doConnect();
 
     }
 
@@ -90,6 +94,7 @@ public class MqttManager {
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                     Log.e("Mqtt","---mqtt----connect--failure");
+                    doConnect();
                 }
             });
 
@@ -102,18 +107,20 @@ public class MqttManager {
     /**
      * 订阅
      */
-    public void subrice() {
+    public void subrice(final TextView tvShow) {
         if (client != null){
             try {
                 client.subscribe("/xuhong", 0, null, new IMqttActionListener() {
                     @Override
                     public void onSuccess(IMqttToken asyncActionToken) {
                         Log.e("Mqtt","---mqtt----订阅--success");
+                        tvShow.setText("订阅成功！");
                     }
 
                     @Override
                     public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                         Log.e("Mqtt","---mqtt----订阅--failure");
+                        tvShow.setText("订阅失败！" + exception);
                     }
                 });
             } catch (MqttException e) {
@@ -125,7 +132,7 @@ public class MqttManager {
     /**
      * 发送消息
      */
-    public void sendMessage(){
+    public void sendMessage(final TextView tvShow){
         MqttMessage mqttMessage = new MqttMessage();
         mqttMessage.setPayload("hello xuhong".getBytes());
 
@@ -134,16 +141,28 @@ public class MqttManager {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     Log.e("Mqtt","---mqtt----发布--success");
+                    tvShow.setText("发布消息成功");
                 }
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                     Log.e("Mqtt","---mqtt----发布--failure");
+                    tvShow.setText("发布消息失败");
                 }
             });
         } catch (MqttException e) {
             e.printStackTrace();
             Log.e("Mqtt","---mqtt----发布--exception");
+            tvShow.setText("发布消息失败");
+        }
+    }
+
+    public void disConnect(){
+        try {
+            client.disconnect();
+            client = null;
+        } catch (MqttException e) {
+            e.printStackTrace();
         }
     }
 }
