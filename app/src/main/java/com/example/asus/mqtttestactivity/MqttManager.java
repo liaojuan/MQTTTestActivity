@@ -38,7 +38,7 @@ public class MqttManager {
 
     public void initMqtt(){
         //第一个参数上下文，第二个 服务器地址，注意下面的格式!!!! 第三个是 客户端ID，注意 必须唯一，如果存在此ID连接了服务器。那么连接失败！
-        client = new MqttAndroidClient(mContext, "tcp://101.132.24.242:1883", "androidID"+System.currentTimeMillis());
+        client = new MqttAndroidClient(mContext, "tcp://101.132.24.242:1884", "androidID"+System.currentTimeMillis());
 
         //配置连接信息
         mqttConnectOptions=new MqttConnectOptions();
@@ -55,29 +55,31 @@ public class MqttManager {
         //超时时间
         mqttConnectOptions.setConnectionTimeout(30);
         //监听服务器发来的 信息
-        client.setCallback(new MqttCallback() {
-            @Override
-            public void connectionLost(Throwable cause) {
-                //连接丢失异常
-                Log.e("Mqtt","---mqtt----connectionLost");
-                doConnect();
-            }
-
-            @Override
-            public void messageArrived(String topic, MqttMessage message) throws Exception {
-                //收到服务器的信息
-                Log.e("Mqtt","---mqtt----messageArrived");
-            }
-
-            @Override
-            public void deliveryComplete(IMqttDeliveryToken token) {
-                Log.e("Mqtt","---mqtt----deliveryComplete");
-            }
-        });
+        client.setCallback(mqttCallback);
 
         doConnect();
 
     }
+
+    private MqttCallback mqttCallback = new MqttCallback(){
+        @Override
+        public void connectionLost(Throwable cause) {
+            //连接丢失异常
+            Log.e("Mqtt","---mqtt----connectionLost");
+            doConnect();
+        }
+
+        @Override
+        public void messageArrived(String topic, MqttMessage message) throws Exception {
+            //收到服务器的信息
+            Log.e("Mqtt","---mqtt----messageArrived");
+        }
+
+        @Override
+        public void deliveryComplete(IMqttDeliveryToken token) {
+            Log.e("Mqtt","---mqtt----deliveryComplete");
+        }
+    };
 
     /**
      * 连接

@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     //初始化客户端
     private void initClient() {
         //第一个参数上下文，第二个 服务器地址，注意下面的格式!!!! 第三个是 客户端ID，注意 必须唯一，如果存在此ID连接了服务器。那么连接失败！
-        client = new MqttAndroidClient(this, "tcp://101.132.24.242:1883", "androidID"+System.currentTimeMillis());
+        client = new MqttAndroidClient(this, "tcp://101.132.24.242:1884", "androidID"+System.currentTimeMillis());
 
         //配置连接信息
         mqttConnectOptions=new MqttConnectOptions();
@@ -152,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
 //        MqttManager.getInstall(MainActivity.this).disConnect();
         try {
             client.disconnect();
+            client.close();
             client = null;
         } catch (MqttException e) {
             e.printStackTrace();
